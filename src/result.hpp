@@ -11,7 +11,7 @@
 // which is less than (2^16)^2 = 2^32
 // due to exponential growth, that's the largest possible score
 // so 32 bit is sufficient
-typedef std::uint_fast32_t Score;
+typedef std::int_fast32_t Score;
 typedef std::uint8_t Dimension;
 struct Coordinate
 {
