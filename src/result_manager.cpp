@@ -1,7 +1,7 @@
 #include "result_manager.hpp"
 #include <iostream>
 
-void ResultManager::report( const Result& result )
+void ResultManager::report( const Result& result, const char* source )
 {
   std::lock_guard< std::mutex > lock( _mutex );
   if( _first )
@@ -28,4 +28,5 @@ void ResultManager::report( const Result& result )
     std::cout << move;
   }
   std::cout << ']' << std::endl;
+  std::cerr << source << ": " << result.score << std::endl;
 }

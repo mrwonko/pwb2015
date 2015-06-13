@@ -8,7 +8,8 @@
 
 #include "result_manager.hpp"
 #include "parser.hpp"
-#include "algorithm/best_now.hpp"
+#include "step/highest_immediate_score.hpp"
+#include "algorithms.hpp"
 
 int main( int argc, char** argv )
 {
@@ -27,7 +28,7 @@ int main( int argc, char** argv )
     std::vector< std::thread > threads;
 
     // start algorithms
-    threads.emplace_back( best_now, std::ref( field ), std::ref( resultManager ) );
+    threads.emplace_back( single_best< highest_immediate_score >, std::ref( field ), std::ref( resultManager ), "single best highest immediate score" );
 
     for( std::thread& thread : threads )
     {

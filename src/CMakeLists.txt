@@ -13,5 +13,6 @@ add_executable( octarine_optimizer
     "result.hpp"
     "field.hpp" "field.cpp"
     "parser.hpp" "parser.cpp"
-    "algorithm/best_now.hpp" "algorithm/best_now.cpp"
+    "step/highest_immediate_score.hpp" "step/highest_immediate_score.cpp"
+    "algorithms.hpp"
 )
