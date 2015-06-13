@@ -9,6 +9,7 @@
 #include "result_manager.hpp"
 #include "parser.hpp"
 #include "step/immediate_score.hpp"
+#include "step/resulting_field.hpp"
 #include "algorithms.hpp"
 
 int main( int argc, char** argv )
@@ -30,6 +31,9 @@ int main( int argc, char** argv )
     // start algorithms
     threads.emplace_back( singleBest< highestImmediateScore >, std::ref( field ), std::ref( resultManager ), "single best highest immediate score" );
     threads.emplace_back( singleBest< lowestImmediateScore >, std::ref( field ), std::ref( resultManager ), "single best lowest immediate score" );
+    threads.emplace_back( singleBest< creatingFewestMatches >, std::ref( field ), std::ref( resultManager ), "single best creating fewest matches" );
+    threads.emplace_back( singleBest< creatingFewestMatchesAvoidingTermination >, std::ref( field ), std::ref( resultManager ), "single best creating fewest matches (avoiding termination)" );
+    threads.emplace_back( singleBest< creatingLargestMatch >, std::ref( field ), std::ref( resultManager ), "single best creating largest match" );
     threads.emplace_back( nBest< highestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
     threads.emplace_back( nBest< lowestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
 
