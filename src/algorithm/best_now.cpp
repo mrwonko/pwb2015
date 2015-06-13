@@ -1,7 +1,6 @@
 #include "best_now.hpp"
 
 #include <algorithm>
-#include <iostream>
 
 void best_now( const Field& field, ResultManager& result_manager )
 {
@@ -26,7 +25,5 @@ void best_now( const Field& field, ResultManager& result_manager )
 
     currentScore += currentField.remove( move.coordinate );
     moves.push_back( move.coordinate );
-
-    std::cerr << "best move " << move.coordinate << " yields:\n" << currentField << '\n' << std::endl;
   }
 }
