@@ -3,4 +3,4 @@
 #include "../field.hpp"
 #include "../result_manager.hpp"
 
-bool highest_immediate_score( const Field& field, Coordinate& out_result );
+void highest_immediate_score( const Field& field, PossibleMoves& out_result );

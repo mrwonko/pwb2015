@@ -3,30 +3,49 @@
 
 void ResultManager::report( const Result& result, const char* source )
 {
-  std::lock_guard< std::mutex > lock( _mutex );
-  if( _first )
+  // do thread-local best-check first to avoid mutex locks when possible
+  thread_local bool first = true;
+  thread_local Score bestScore;
+  if( first )
   {
-    _first = false;
+    first = false;
+    bestScore = result.score;
   }
-  else if( result.score < _bestScore )
+  else
   {
-    return;
-  }
-  _bestScore = result.score;
-  std::cout << '[';
-  bool first = true;
-  for( const Coordinate& move : result.moves )
-  {
-    if( !first )
+    if( result.score <= bestScore )
     {
-      std::cout << ',';
+      return;
     }
-    else
-    {
-      first = false;
-    }
-    std::cout << move;
+    bestScore = result.score;
   }
-  std::cout << ']' << std::endl;
-  std::cerr << source << ": " << result.score << std::endl;
+  // then do synchronized best-check
+  {
+    std::lock_guard< std::mutex > lock( _mutex );
+    if( _first )
+    {
+      _first = false;
+    }
+    else if( result.score <= _bestScore )
+    {
+      return;
+    }
+    _bestScore = result.score;
+    std::cout << '[';
+    bool first = true;
+    for( const Coordinate& move : result.moves )
+    {
+      if( !first )
+      {
+        std::cout << ',';
+      }
+      else
+      {
+        first = false;
+      }
+      std::cout << move;
+    }
+    std::cout << ']' << std::endl;
+    std::cerr << source << ": " << result.score << std::endl;
+  }
 }

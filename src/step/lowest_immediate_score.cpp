@@ -2,15 +2,8 @@
 
 #include <algorithm>
 
-bool lowest_immediate_score( const Field& field, Coordinate& out_result )
+void lowest_immediate_score( const Field& field, PossibleMoves& out_result )
 {
-  PossibleMoves possibleMoves;
-  field.calculateMoves( possibleMoves );
-  if( possibleMoves.empty() )
-  {
-    return false;
-  }
-  std::sort( possibleMoves.begin(), possibleMoves.end(), sortByScore );
-  out_result = possibleMoves.rbegin()->coordinate;
-  return true;
+  field.calculateMoves( out_result );
+  std::sort( out_result.rbegin(), out_result.rend(), sortByScore );
 }
