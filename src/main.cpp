@@ -9,6 +9,7 @@
 #include "result_manager.hpp"
 #include "parser.hpp"
 #include "step/highest_immediate_score.hpp"
+#include "step/lowest_immediate_score.hpp"
 #include "algorithms.hpp"
 
 int main( int argc, char** argv )
@@ -29,6 +30,7 @@ int main( int argc, char** argv )
 
     // start algorithms
     threads.emplace_back( single_best< highest_immediate_score >, std::ref( field ), std::ref( resultManager ), "single best highest immediate score" );
+    threads.emplace_back( single_best< lowest_immediate_score >, std::ref( field ), std::ref( resultManager ), "single best lowest immediate score" );
 
     for( std::thread& thread : threads )
     {
