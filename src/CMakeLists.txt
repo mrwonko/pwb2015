@@ -4,7 +4,7 @@ project( "Octarine Optimizer" )
 
 # enable C++11 support
 if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lpthread")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_executable( octarine_optimizer
