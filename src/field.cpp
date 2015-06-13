@@ -24,19 +24,19 @@ static Score floodFill( Field::Cells& cells, const Coordinate size, const Coordi
   Score count = 1;
   if( coord.x > 0 )
   {
-    count += floodFill( cells, size, { static_cast< unsigned int >( coord.x - 1u ), coord.y }, color );
+    count += floodFill( cells, size, { coord.x - 1u, coord.y }, color );
   }
   if( coord.x + 1 < size.x )
   {
-    count += floodFill( cells, size, { static_cast< unsigned int >( coord.x + 1u ), coord.y }, color );
+    count += floodFill( cells, size, { coord.x + 1u, coord.y }, color );
   }
   if( coord.y > 0 )
   {
-    count += floodFill( cells, size, { coord.x, static_cast< unsigned int >( coord.y - 1u ) }, color );
+    count += floodFill( cells, size, { coord.x, coord.y - 1u }, color );
   }
   if( coord.y + 1 < size.y )
   {
-    count += floodFill( cells, size, { coord.x, static_cast< unsigned int >( coord.y + 1u ) }, color );
+    count += floodFill( cells, size, { coord.x, coord.y + 1u }, color );
   }
   return count;
 }
