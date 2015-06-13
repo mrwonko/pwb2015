@@ -1,6 +1,12 @@
 .PHONY: all run clean name
 
-all:
+bin/:
+    @mkdir -p bin >2&
+
+bin/simplyTheBest: simplyTheBest.hs bin/
+    @ghc -o bin/simplyTheBest simplyTheBest.hs >&2
+
+all: bin/simplyTheBest
 	@echo "successfully compiled" >&2
 
 run: all
