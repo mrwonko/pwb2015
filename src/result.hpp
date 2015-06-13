@@ -38,7 +38,12 @@ struct PossibleMove
 };
 typedef std::vector< PossibleMove > PossibleMoves;
 
-inline bool sortByScore( const PossibleMove& lhs, const PossibleMove& rhs )
+inline bool sortByScoreDescending( const PossibleMove& lhs, const PossibleMove& rhs )
 {
   return lhs.score > rhs.score;
+}
+
+inline bool sortByScore( const PossibleMove& lhs, const PossibleMove& rhs )
+{
+  return lhs.score < rhs.score;
 }

@@ -7,7 +7,7 @@
 
 // Of the sorted possible moves, take the best one
 template< void ( *calculatePossibleMoves )( const Field&, PossibleMoves& ) >
-void single_best( const Field& field, ResultManager& resultManager, const char* name )
+void singleBest( const Field& field, ResultManager& resultManager, const char* name )
 {
   thread_local PossibleMoves possibleMoves;
   Field currentField( field );
@@ -30,7 +30,7 @@ void single_best( const Field& field, ResultManager& resultManager, const char* 
 namespace detail
 {
   template< void( *calculatePossibleMoves )( const Field&, PossibleMoves& ), unsigned int n >
-  void n_best( const Field& currentField, ResultManager& resultManager, Score currentScore, Moves& moves, const char* name )
+  void nBest( const Field& currentField, ResultManager& resultManager, Score currentScore, Moves& moves, const char* name )
   {
     PossibleMoves possibleMoves;
     calculatePossibleMoves( currentField, possibleMoves );
@@ -48,7 +48,7 @@ namespace detail
         Field nextField( currentField );
         Score nextScore = currentScore + nextField.remove( move.coordinate );
         moves.push_back( move.coordinate );
-        n_best< calculatePossibleMoves, n >( std::move( nextField ), resultManager, nextScore, moves, name );
+        nBest< calculatePossibleMoves, n >( std::move( nextField ), resultManager, nextScore, moves, name );
         moves.pop_back();
       }
     }
@@ -57,9 +57,9 @@ namespace detail
 
 // of the sorted possible moves, try the n best ones
 template< void( *calculatePossibleMoves )( const Field&, PossibleMoves& ), unsigned int n >
-void n_best( const Field& field, ResultManager& resultManager, const char* name )
+void nBest( const Field& field, ResultManager& resultManager, const char* name )
 {
   Moves moves;
-  detail::n_best< calculatePossibleMoves, n >( field, resultManager, 0, moves, name );
+  detail::nBest< calculatePossibleMoves, n >( field, resultManager, 0, moves, name );
 }
 // TODO WIP

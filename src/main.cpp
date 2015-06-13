@@ -8,8 +8,7 @@
 
 #include "result_manager.hpp"
 #include "parser.hpp"
-#include "step/highest_immediate_score.hpp"
-#include "step/lowest_immediate_score.hpp"
+#include "step/immediate_score.hpp"
 #include "algorithms.hpp"
 
 int main( int argc, char** argv )
@@ -29,10 +28,10 @@ int main( int argc, char** argv )
     std::vector< std::thread > threads;
 
     // start algorithms
-    threads.emplace_back( single_best< highest_immediate_score >, std::ref( field ), std::ref( resultManager ), "single best highest immediate score" );
-    threads.emplace_back( single_best< lowest_immediate_score >, std::ref( field ), std::ref( resultManager ), "single best lowest immediate score" );
-    threads.emplace_back( n_best< highest_immediate_score, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
-    threads.emplace_back( n_best< lowest_immediate_score, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
+    threads.emplace_back( singleBest< highestImmediateScore >, std::ref( field ), std::ref( resultManager ), "single best highest immediate score" );
+    threads.emplace_back( singleBest< lowestImmediateScore >, std::ref( field ), std::ref( resultManager ), "single best lowest immediate score" );
+    threads.emplace_back( nBest< highestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
+    threads.emplace_back( nBest< lowestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
 
     for( std::thread& thread : threads )
     {
