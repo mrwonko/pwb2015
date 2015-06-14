@@ -1,7 +1,7 @@
 #include "result_manager.hpp"
 #include <iostream>
 
-void ResultManager::report( const Result& result, const char* source )
+void ResultManager::report( const Score score, const Moves& moves, const char* source )
 {
   // do thread-local best-check first to avoid mutex locks when possible
   thread_local bool first = true;
@@ -9,15 +9,15 @@ void ResultManager::report( const Result& result, const char* source )
   if( first )
   {
     first = false;
-    bestScore = result.score;
+    bestScore = score;
   }
   else
   {
-    if( result.score <= bestScore )
+    if( score <= bestScore )
     {
       return;
     }
-    bestScore = result.score;
+    bestScore = score;
   }
   // then do synchronized best-check
   {
@@ -26,14 +26,14 @@ void ResultManager::report( const Result& result, const char* source )
     {
       _first = false;
     }
-    else if( result.score <= _bestScore )
+    else if( score <= _bestScore )
     {
       return;
     }
-    _bestScore = result.score;
+    _bestScore = score;
     std::cout << '[';
     bool first = true;
-    for( const Coordinate& move : result.moves )
+    for( const Coordinate& move : moves )
     {
       if( !first )
       {
@@ -46,6 +46,6 @@ void ResultManager::report( const Result& result, const char* source )
       std::cout << move;
     }
     std::cout << ']' << std::endl;
-    std::cerr << source << ": " << result.score << std::endl;
+    std::cerr << source << ": " << score << std::endl;
   }
 }

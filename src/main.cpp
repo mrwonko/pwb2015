@@ -29,11 +29,13 @@ int main( int argc, char** argv )
     std::vector< std::thread > threads;
 
     // start algorithms
-    threads.emplace_back( singleBest< highestImmediateScore >, std::ref( field ), std::ref( resultManager ), "single best highest immediate score" );
-    threads.emplace_back( singleBest< lowestImmediateScore >, std::ref( field ), std::ref( resultManager ), "single best lowest immediate score" );
-    threads.emplace_back( singleBest< creatingFewestMatches >, std::ref( field ), std::ref( resultManager ), "single best creating fewest matches" );
-    threads.emplace_back( singleBest< creatingFewestMatchesAvoidingTermination >, std::ref( field ), std::ref( resultManager ), "single best creating fewest matches (avoiding termination)" );
-    threads.emplace_back( singleBest< creatingLargestMatch >, std::ref( field ), std::ref( resultManager ), "single best creating largest match" );
+    threads.emplace_back( each< 
+      highestImmediateScore,
+      lowestImmediateScore,
+      creatingLargestMatch,
+      creatingFewestMatches,
+      creatingFewestMatchesAvoidingTermination
+    >::singleBest, std::ref( field ), std::ref( resultManager ), 0, Moves{}, "single best" );
     threads.emplace_back( nBest< highestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
     threads.emplace_back( nBest< lowestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
 

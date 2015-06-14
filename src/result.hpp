@@ -25,12 +25,6 @@ inline std::ostream& operator<<( std::ostream& os, const Coordinate& coord )
   return os << '(' << static_cast< unsigned int >( coord.x ) << ',' << static_cast< unsigned int >( coord.y ) << ')';
 }
 
-struct Result
-{
-  Score score;
-  Moves moves;
-};
-
 struct PossibleMove
 {
   Coordinate coordinate;
