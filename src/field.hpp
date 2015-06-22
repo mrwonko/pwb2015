@@ -3,13 +3,15 @@
 #include <vector>
 #include <cstdint>
 #include <ostream>
+#include <iterator>
+#include <tuple>
 
 #include "result.hpp"
 
 typedef std::uint8_t Color;
 
-// TODO: write a faster, caching data structure
-
+// TODO: write a faster, caching data structure (cache possible moves)
+// TODO: use a single size across all fields to save space
 class Field
 {
 public:
@@ -34,6 +36,78 @@ public:
   {
     return _size;
   }
+
+
+  struct Entry
+  {
+    Coordinate coordinate;
+    Color color;
+  };
+
+  // iterate through cells
+  class const_iterator : public std::iterator< std::input_iterator_tag, Entry, int >
+  {
+    friend class Field;
+  public:
+    inline bool operator==( const const_iterator& rhs ) const
+    {
+      return _entry.coordinate == rhs._entry.coordinate;
+    }
+    inline bool operator!=( const const_iterator& rhs ) const
+    {
+      return !( ( *this ) == rhs );
+    }
+    // invalidated on ++
+    const Entry& operator*() const
+    {
+      return _entry;
+    }
+    const Entry* operator->() const
+    {
+      return &_entry;
+    }
+    const_iterator& operator++()
+    {
+      _entry.coordinate.x += 1;
+      if( _entry.coordinate.x >= _field->getSize().x )
+      {
+        _entry.coordinate.x = 0;
+        _entry.coordinate.y += 1;
+      }
+      return *this;
+    }
+    const_iterator operator++( int ) const
+    {
+      return ++const_iterator( *this );
+    }
+
+  private:
+    const_iterator( const Field& field )
+      : _field( &field )
+      , _entry{ { 0, 0 }, 0 }
+    {
+    }
+
+    const_iterator( const Field& field, const Coordinate& coordinate )
+      : _field( &field )
+      , _entry{ coordinate, 0 }
+    {
+    }
+
+  private:
+    const Field* _field;
+    Entry _entry;
+  };
+
+  const_iterator begin() const
+  {
+    return const_iterator( *this );
+  }
+  const_iterator end() const
+  {
+    return const_iterator( *this, { 0, getSize().y + 1u } );
+  }
+
 private:
   inline bool isColumnEmpty( Dimension x ) const
   {

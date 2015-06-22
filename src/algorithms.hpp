@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <iostream>
 
 typedef void( *MoveCalculation )( const Field&, PossibleMoves& );
 
@@ -71,6 +72,7 @@ void nBest( const Field& field, ResultManager& resultManager, const char* name )
 {
   Moves moves;
   detail::nBest< calculatePossibleMoves, n >( field, resultManager, 0, moves, name );
+  std::cerr << name << " finished" << std::endl;
 }
 
 
@@ -80,7 +82,7 @@ struct each;
 template<>
 struct each<>
 {
-  static void singleBest( const Field& field, ResultManager& resultManager, const Score currentScore, const Moves& moves, const char* name )
+  static void _singleBest( const Field& field, ResultManager& resultManager, const Score currentScore, const Moves& moves, const char* name )
   {
   }
 };
@@ -88,11 +90,17 @@ struct each<>
 template< MoveCalculation firstMoveCalculation, MoveCalculation... remainingMoveCalculations >
 struct each< firstMoveCalculation, remainingMoveCalculations... >
 {
-  static void singleBest( const Field& field, ResultManager& resultManager, const Score currentScore, const Moves& moves, const char* name )
+  static void _singleBest( const Field& field, ResultManager& resultManager, const Score currentScore, const Moves& moves, const char* name )
   {
     thread_local Moves currentMoves;
     currentMoves = moves;
     detail::singleBest< firstMoveCalculation >( field, resultManager, currentScore, currentMoves, name );
     each< remainingMoveCalculations... >::singleBest( field, resultManager, currentScore, moves, name );
+  }
+
+  static void singleBest( const Field& field, ResultManager& resultManager, const char* name )
+  {
+    each< firstMoveCalculation, remainingMoveCalculations... >::_singleBest( field, resultManager, 0, Moves{}, name );
+    std::cerr << name << " finished" << std::endl;
   }
 };

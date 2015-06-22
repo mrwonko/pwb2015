@@ -4,6 +4,7 @@
 #include <utility>
 #include <cstdint>
 #include <ostream>
+#include <tuple>
 
 // game field is 2^8 x 2^8 at most
 // so the biggest match is 2^16 at once
@@ -23,6 +24,11 @@ typedef std::vector< Coordinate > Moves;
 inline std::ostream& operator<<( std::ostream& os, const Coordinate& coord )
 {
   return os << '(' << static_cast< unsigned int >( coord.x ) << ',' << static_cast< unsigned int >( coord.y ) << ')';
+}
+
+inline bool operator==( const Coordinate& lhs, const Coordinate& rhs )
+{
+  return std::tie( lhs.x, lhs.y ) == std::tie( rhs.x, rhs.y );
 }
 
 struct PossibleMove

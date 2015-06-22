@@ -10,3 +10,7 @@ void creatingFewestMatches( const Field& field, PossibleMoves& out_result );
 void creatingFewestMatchesAvoidingTermination( const Field& field, PossibleMoves& out_result );
 
 void creatingLargestMatch( const Field& field, PossibleMoves& out_result );
+
+void creatingSmallestMeanDistanceToCentroid( const Field& field, PossibleMoves& out_result );
+
+void creatingSmallestMaximumDistanceToCentroid( const Field& field, PossibleMoves& out_result );

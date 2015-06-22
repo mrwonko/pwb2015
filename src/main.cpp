@@ -34,8 +34,10 @@ int main( int argc, char** argv )
       lowestImmediateScore,
       creatingLargestMatch,
       creatingFewestMatches,
-      creatingFewestMatchesAvoidingTermination
-    >::singleBest, std::ref( field ), std::ref( resultManager ), 0, Moves{}, "single best" );
+      creatingFewestMatchesAvoidingTermination,
+      creatingSmallestMeanDistanceToCentroid,
+      creatingSmallestMaximumDistanceToCentroid
+    >::singleBest, std::ref( field ), std::ref( resultManager ), "single best" );
     threads.emplace_back( nBest< highestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
     threads.emplace_back( nBest< lowestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
 
