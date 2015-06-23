@@ -105,4 +105,8 @@ struct each< firstMoveCalculation, remainingMoveCalculations... >
   }
 };
 
-void priorityExpand( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );
+void priorityExpandHeuristically( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );
+
+// I'm not sure this ever performs better than the heuristical version
+void priorityExpandAll( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );
+

@@ -53,18 +53,21 @@ int main( int argc, char** argv )
     // since this algorithm doesn't yield any results until it's fully done I use varying lengths (longer = better results, potentially)
     threads.emplace_back( [ &field, &resultManager ]()
     {
-      priorityExpand( field, resultManager, 16 );
-      priorityExpand( field, resultManager, 8096 );
+      priorityExpandHeuristically( field, resultManager, 16 );
+      //priorityExpandAll( field, resultManager, 16 );
+      priorityExpandHeuristically( field, resultManager, 8096 );
     } );
     threads.emplace_back( [ &field, &resultManager ]()
     {
-      priorityExpand( field, resultManager, 64 );
-      priorityExpand( field, resultManager, 2048 );
+      priorityExpandHeuristically( field, resultManager, 64 );
+      //priorityExpandAll( field, resultManager, 64 );
+      //priorityExpandHeuristically( field, resultManager, 2048 );
     } );
     threads.emplace_back( [ &field, &resultManager ]()
     {
-      priorityExpand( field, resultManager, 256 );
-      priorityExpand( field, resultManager, 1024 );
+      priorityExpandHeuristically( field, resultManager, 256 );
+      //priorityExpandAll( field, resultManager, 256 );
+      priorityExpandHeuristically( field, resultManager, 1024 );
     } );
 
     for( std::thread& thread : threads )

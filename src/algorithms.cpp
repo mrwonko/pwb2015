@@ -49,21 +49,11 @@ struct coordinateComp
 
 typedef std::set< Coordinate, coordinateComp > CoordinateSet;
 
-void priorityExpand( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit )
+template< typename MovesContainer, void( *calculateMoves )( const Field&, MovesContainer& ) >
+static void priorityExpand( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit, const char* name )
 {
-  MoveCalculation moveCalculations[] = 
-  {
-    highestImmediateScore,
-    lowestImmediateScore,
-    creatingLargestMatch,
-    creatingFewestMatches,
-    creatingFewestMatchesAvoidingTermination,
-    creatingSmallestMeanDistanceToCentroid,
-    creatingSmallestMaximumDistanceToCentroid
-  };
   NodeQueue queue{ { 0u, { Moves(), field } } };
   PossibleMoves possibleMoves;
-  std::string name = "limited expansion (" + std::to_string( sizeLimit ) + ")";
   while( !queue.empty() )
   {
     NodeQueue lastQueue( std::move( queue ) );
@@ -71,18 +61,11 @@ void priorityExpand( const Field& field, ResultManager& resultManager, const uns
     {
       Node& node = item.second;
       const Score& score = item.first;
-      CoordinateSet moves;
-      for( MoveCalculation moveCalculation : moveCalculations )
-      {
-        moveCalculation( node.field, possibleMoves );
-        if( !possibleMoves.empty() )
-        {
-          moves.insert( possibleMoves.front().coordinate );
-        }
-      }
+      MovesContainer moves;
+      calculateMoves( node.field, moves );
       if( moves.empty() )
       {
-        resultManager.report( item.first - node.field.calculatePenalty(), node.moves, name.c_str() );
+        resultManager.report( item.first - node.field.calculatePenalty(), node.moves, name );
       }
       else
       {
@@ -98,3 +81,50 @@ void priorityExpand( const Field& field, ResultManager& resultManager, const uns
   }
   std::cerr << name << " finished" << std::endl;
 }
+
+static void calculateHeuristically( const Field& field, CoordinateSet& out_result )
+{
+  static const MoveCalculation moveCalculations[] =
+  {
+    highestImmediateScore,
+    lowestImmediateScore,
+    creatingLargestMatch,
+    creatingFewestMatches,
+    creatingFewestMatchesAvoidingTermination,
+    creatingSmallestMeanDistanceToCentroid,
+    creatingSmallestMaximumDistanceToCentroid
+  };
+  thread_local PossibleMoves possibleMoves;
+  for( MoveCalculation moveCalculation : moveCalculations )
+  {
+    moveCalculation( field, possibleMoves );
+    if( !possibleMoves.empty() )
+    {
+      out_result.insert( possibleMoves.front().coordinate );
+    }
+  }
+}
+
+void priorityExpandHeuristically( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit )
+{
+  std::string name = "heuristical limited expansion (" + std::to_string( sizeLimit ) + ")";
+  priorityExpand< CoordinateSet, calculateHeuristically >( field, resultManager, sizeLimit, name.c_str() );
+}
+
+static void calculateAll( const Field& field, std::vector< Coordinate >& out_result )
+{
+  thread_local PossibleMoves possibleMoves;
+  field.calculateMoves( possibleMoves );
+  out_result.reserve( possibleMoves.size() );
+  for( const PossibleMove& move : possibleMoves )
+  {
+    out_result.push_back( move.coordinate );
+  }
+}
+
+void priorityExpandAll( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit )
+{
+  std::string name = "limited full expansion (" + std::to_string( sizeLimit ) + ")";
+  priorityExpand< std::vector< Coordinate >, calculateAll >( field, resultManager, sizeLimit, name.c_str() );
+}
+
