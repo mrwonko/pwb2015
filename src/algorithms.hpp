@@ -104,3 +104,5 @@ struct each< firstMoveCalculation, remainingMoveCalculations... >
     std::cerr << name << " finished" << std::endl;
   }
 };
+
+void priorityExpand( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );

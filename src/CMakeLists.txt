@@ -15,5 +15,5 @@ add_executable( octarine_optimizer
     "parser.hpp" "parser.cpp"
     "step/immediate_score.hpp" "step/immediate_score.cpp"
     "step/resulting_field.hpp" "step/resulting_field.cpp"
-    "algorithms.hpp"
+    "algorithms.hpp" "algorithms.cpp"
 )

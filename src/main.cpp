@@ -29,17 +29,43 @@ int main( int argc, char** argv )
     std::vector< std::thread > threads;
 
     // start algorithms
-    threads.emplace_back( each< 
-      highestImmediateScore,
-      lowestImmediateScore,
-      creatingLargestMatch,
-      creatingFewestMatches,
-      creatingFewestMatchesAvoidingTermination,
-      creatingSmallestMeanDistanceToCentroid,
-      creatingSmallestMaximumDistanceToCentroid
-    >::singleBest, std::ref( field ), std::ref( resultManager ), "single best" );
-    threads.emplace_back( nBest< highestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
-    threads.emplace_back( nBest< lowestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
+    threads.emplace_back( [ &field, &resultManager ]()
+    {
+      each<
+        highestImmediateScore,
+        lowestImmediateScore,
+        creatingLargestMatch,
+        creatingFewestMatches,
+        creatingFewestMatchesAvoidingTermination,
+        creatingSmallestMeanDistanceToCentroid,
+        creatingSmallestMaximumDistanceToCentroid
+      >::singleBest( field, resultManager, "single best" );
+      // TODO: proceed randomly
+    } );
+    // these usually take too long and use too much memory
+    if( field.getSize().x * field.getSize().y <= 50 )
+    {
+      threads.emplace_back( nBest< highestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best highest immediate score" );
+      threads.emplace_back( nBest< lowestImmediateScore, 2 >, std::ref( field ), std::ref( resultManager ), "2 best lowest immediate score" );
+    }
+    // worst case: size 256*256 * 1 Byte, 1024 moves (?) * 2 bytes/move -> 2^16+2^11 bytes < 128KB. allowing for 1024MB that's 8*1024 nodes
+    // usually fields are much smaller though, on 16x16 I hardly pass 10MB total
+    // since this algorithm doesn't yield any results until it's fully done I use varying lengths (longer = better results, potentially)
+    threads.emplace_back( [ &field, &resultManager ]()
+    {
+      priorityExpand( field, resultManager, 16 );
+      priorityExpand( field, resultManager, 8096 );
+    } );
+    threads.emplace_back( [ &field, &resultManager ]()
+    {
+      priorityExpand( field, resultManager, 64 );
+      priorityExpand( field, resultManager, 2048 );
+    } );
+    threads.emplace_back( [ &field, &resultManager ]()
+    {
+      priorityExpand( field, resultManager, 256 );
+      priorityExpand( field, resultManager, 1024 );
+    } );
 
     for( std::thread& thread : threads )
     {
