@@ -7,7 +7,7 @@
 class ResultManager
 {
 public:
-  void report( const Score score, const Moves& moves, const char* source );
+  bool report( const Score score, const Moves& moves, const char* source );
 private:
   mutable std::mutex _mutex;
   Score _bestScore;

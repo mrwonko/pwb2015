@@ -1,7 +1,7 @@
 #include "result_manager.hpp"
 #include <iostream>
 
-void ResultManager::report( const Score score, const Moves& moves, const char* source )
+bool ResultManager::report( const Score score, const Moves& moves, const char* source )
 {
   // do thread-local best-check first to avoid mutex locks when possible
   thread_local bool first = true;
@@ -15,7 +15,7 @@ void ResultManager::report( const Score score, const Moves& moves, const char* s
   {
     if( score <= bestScore )
     {
-      return;
+      return false;
     }
     bestScore = score;
   }
@@ -28,7 +28,7 @@ void ResultManager::report( const Score score, const Moves& moves, const char* s
     }
     else if( score <= _bestScore )
     {
-      return;
+      return false;
     }
     _bestScore = score;
     std::cout << '[';
@@ -47,5 +47,6 @@ void ResultManager::report( const Score score, const Moves& moves, const char* s
     }
     std::cout << ']' << std::endl;
     std::cerr << source << ": " << score << std::endl;
+    return true;
   }
 }
