@@ -44,7 +44,7 @@ namespace detail
     else
     {
       // try the best n moves
-      possibleMoves.resize( std::min( possibleMoves.size(), n ) );
+      possibleMoves.resize( std::min< PossibleMoves::size_type >( possibleMoves.size(), n ) );
       for( const PossibleMove& move : possibleMoves )
       {
         Field nextField( currentField );
