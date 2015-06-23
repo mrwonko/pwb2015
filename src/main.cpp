@@ -40,7 +40,9 @@ int main( int argc, char** argv )
         creatingSmallestMeanDistanceToCentroid,
         creatingSmallestMaximumDistanceToCentroid
       >::singleBest( field, resultManager, "single best" );
-      // TODO: proceed randomly
+      // by not using a (pseudo) random seed we actually stay deterministic!
+      // I don't like relying on "luck" so let's use a deterministic approach.
+      randomly( field, resultManager, 0xBAADF00D );
     } );
     // these usually take too long and use too much memory
     if( field.getSize().x * field.getSize().y <= 50 )

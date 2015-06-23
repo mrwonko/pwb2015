@@ -110,3 +110,4 @@ void priorityExpandHeuristically( const Field& field, ResultManager& resultManag
 // I'm not sure this ever performs better than the heuristical version
 void priorityExpandAll( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );
 
+void randomly( const Field& field, ResultManager& resultManager, unsigned int seed );

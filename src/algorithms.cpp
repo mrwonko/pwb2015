@@ -7,6 +7,7 @@
 #include <iterator>
 #include <tuple>
 #include <string>
+#include <random>
 
 struct Node
 {
@@ -128,3 +129,55 @@ void priorityExpandAll( const Field& field, ResultManager& resultManager, const 
   priorityExpand< std::vector< Coordinate >, calculateAll >( field, resultManager, sizeLimit, name.c_str() );
 }
 
+
+void randomly( const Field& initialField, ResultManager& resultManager, unsigned int seed )
+{
+  std::default_random_engine engine( seed );
+  PossibleMoves possibleMoves;
+
+  struct Step
+  {
+    Field field;
+    Score score;
+  };
+
+  Moves moves;
+  std::vector< Step > fields;
+  while( true )
+  {
+    fields.push_back( { initialField, 0u } );
+    fields.back().field.calculateMoves( possibleMoves );
+    while( !possibleMoves.empty() )
+    {
+      std::uniform_int_distribution< unsigned int > uniform_distribution( 0, possibleMoves.size() - 1 );
+      Coordinate move = possibleMoves[ uniform_distribution( engine ) ].coordinate;
+      moves.push_back( move );
+      fields.push_back( fields.back() );
+      fields.back().score += fields.back().field.remove( move );
+      fields.back().field.calculateMoves( possibleMoves );
+    }
+    fields.back().score -= fields.back().field.calculatePenalty();
+    resultManager.report( fields.back().score, moves, "randomly" );
+
+    fields.pop_back();
+    moves.pop_back();
+    // maybe use something > 1? as it stands, there will be some redundancy.
+    while( fields.size() > 1 )
+    {
+      each<
+        highestImmediateScore,
+        lowestImmediateScore,
+        creatingLargestMatch,
+        creatingFewestMatches,
+        creatingFewestMatchesAvoidingTermination,
+        creatingSmallestMeanDistanceToCentroid,
+        creatingSmallestMaximumDistanceToCentroid
+      >::_singleBest( fields.back().field, resultManager, fields.back().score, moves, "randomly single best" );
+      fields.pop_back();
+      moves.pop_back();
+    }
+
+    moves.clear();
+    fields.clear();
+  }
+}
