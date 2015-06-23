@@ -95,7 +95,7 @@ struct each< firstMoveCalculation, remainingMoveCalculations... >
     thread_local Moves currentMoves;
     currentMoves = moves;
     detail::singleBest< firstMoveCalculation >( field, resultManager, currentScore, currentMoves, name );
-    each< remainingMoveCalculations... >::singleBest( field, resultManager, currentScore, moves, name );
+    each< remainingMoveCalculations... >::_singleBest( field, resultManager, currentScore, moves, name );
   }
 
   static void singleBest( const Field& field, ResultManager& resultManager, const char* name )
