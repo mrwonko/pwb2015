@@ -57,7 +57,10 @@ int main( int argc, char** argv )
     {
       priorityExpandHeuristically( field, resultManager, 16 );
       //priorityExpandAll( field, resultManager, 16 );
-      priorityExpandHeuristically( field, resultManager, 8096 );
+      if( field.getSize().x * field.getSize().y <= 42 )
+      {
+        priorityExpandHeuristically( field, resultManager, 8096 );
+      }
       randomly( field, resultManager, 0xC0DED00D );
     } );
     threads.emplace_back( [ &field, &resultManager ]()
@@ -71,7 +74,10 @@ int main( int argc, char** argv )
     {
       priorityExpandHeuristically( field, resultManager, 256 );
       //priorityExpandAll( field, resultManager, 256 );
-      priorityExpandHeuristically( field, resultManager, 1024 );
+      if( field.getSize().x * field.getSize().y <= 42 * 4.2 )
+      {
+        priorityExpandHeuristically( field, resultManager, 1024 );
+      }
       randomly( field, resultManager, 0x31415927 );
     } );
 
