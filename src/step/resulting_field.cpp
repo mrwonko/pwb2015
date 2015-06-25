@@ -6,6 +6,7 @@
 #include <cmath>
 
 
+// sort based on the score of the resulting fields, scored by a given function
 template< Score ( *scoreField )( const Field& ), bool sortDescending >
 static inline void creatingBestField( const Field& field, PossibleMoves& out_result )
 {
@@ -19,6 +20,8 @@ static inline void creatingBestField( const Field& field, PossibleMoves& out_res
   }
   std::sort( out_result.begin(), out_result.end(), sortDescending ? sortByScoreDescending : sortByScore );
 }
+
+// score a field by the number of matches in it; since the one with the fewest matches is chosen, an option to avoid 0 matches (= dead end) is available
 template< bool penalizeZero >
 static inline Score scoreByMatchCount( const Field& field )
 {
@@ -40,6 +43,7 @@ static inline Score scoreByLargestMatch( const Field& field )
 {
   thread_local PossibleMoves nextPossibleMoves;
   field.calculateMoves( nextPossibleMoves );
+  // max_element returns an end() iterator for empty containers, thus the check
   return nextPossibleMoves.empty() ? 0 : std::max_element( nextPossibleMoves.begin(), nextPossibleMoves.end(), sortByScore )->score;
 }
 
@@ -58,6 +62,8 @@ void creatingLargestMatch( const Field& field, PossibleMoves& out_result )
   creatingBestField< scoreByLargestMatch, true >( field, out_result );
 }
 
+
+// basically creatingBestField, but for float scores.
 template< float( *scoreField )( const Field& ), bool sortDescending >
 static inline void creatingBestField_float( const Field& field, PossibleMoves& out_result )
 {

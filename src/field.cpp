@@ -4,6 +4,7 @@
 #include <utility>
 #include <cassert>
 
+
 Field::Field( Cells&& cells, const Dimension width )
   : _cells( std::move( cells ) )
   , _size( { width, static_cast< Dimension >( _cells.size() / width ) } )
@@ -11,17 +12,21 @@ Field::Field( Cells&& cells, const Dimension width )
   assert( static_cast< unsigned int >( _size.x ) * _size.y == _cells.size() );
 }
 
-// FloodFills with empty (0)
+
+// FloodFills an area of the given color with empty (0)
 // TODO: use scanline fill for better speed
 static Score floodFill( Field::Cells& cells, const Coordinate size, const Coordinate coord, const Color color )
 {
   const Field::Cells::size_type index = static_cast< Field::Cells::size_type >( coord.y ) * size.x + coord.x;
+
   if( cells[ index ] != color )
   {
     return 0;
   }
+
   cells[ index ] = 0;
   Score count = 1;
+
   if( coord.x > 0 )
   {
     count += floodFill( cells, size, { coord.x - 1u, coord.y }, color );
@@ -38,6 +43,7 @@ static Score floodFill( Field::Cells& cells, const Coordinate size, const Coordi
   {
     count += floodFill( cells, size, { coord.x, coord.y + 1u }, color );
   }
+
   return count;
 }
 
@@ -47,11 +53,12 @@ void Field::calculateMoves( PossibleMoves& out_moves ) const
   cells = _cells;
   Coordinate coord{ 0, 0 };
   out_moves.clear();
-  // stop on first empty column
+
+  // stop on the first empty column
   for( coord.x = 0; coord.x < _size.x && get( { coord.x, 0 } ) != 0; ++coord.x )
   {
     Color col;
-    // stop ascent at first empty cell
+    // stop ascent at the first empty cell
     for( coord.y = 0; coord.y < _size.y && (col = get( coord ) ) != 0; ++coord.y )
     {
       assert( col != 0 );
@@ -71,9 +78,11 @@ Score Field::remove( Coordinate coord )
   {
     return 0;
   }
+
   Score tiles = floodFill( _cells, _size, coord, color );
   Coordinate pos{ 0, 0 };
-  // move tiles down
+
+  // move tiles down (from bottom to top; only move them once, not once per step)
   for( pos.x = 0; pos.x < _size.x; ++pos.x )
   {
     Dimension yOut = 0;
@@ -92,7 +101,7 @@ Score Field::remove( Coordinate coord )
       ++yOut;
     }
   }
-  // move rows left (empty rows have an empty bottom tile)
+  // move rows to the left if there are empty rows left of them (empty rows have an empty bottom tile, so we only need to check if y = 0)
   Dimension xOut = 0;
   for( pos.x = 0; pos.x < _size.x; ++pos.x )
   {
@@ -121,22 +130,25 @@ Score Field::remove( Coordinate coord )
 
 Score Field::calculatePenalty()
 {
-  // sorting in-place, i.e. Field is unusable now
+  // we are sorting in-place to avoid copies, that comes at the cost of having a sorted field afterwards. Obviously all actual information besides penalty is lost.
   std::sort( _cells.begin(), _cells.end() );
   auto it = _cells.begin();
-  // ignore 0s
+  // ignore 0s; since it's sorted, those come first.
   while( it != _cells.end() && *it == 0 )
   {
     ++it;
   }
+
   if( it == _cells.end() )
   {
     return 0;
   }
+
   Score penalty = 0;
   Score curCountMinusOne = 0;
   Color curColor = *it;
   ++it;
+
   while( it != _cells.end() )
   {
     if( *it != curColor )

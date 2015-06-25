@@ -4,6 +4,7 @@
 
 #include "result.hpp"
 
+// In retrospect I should've just used a function
 class ResultManager
 {
 public:

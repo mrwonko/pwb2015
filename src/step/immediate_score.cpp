@@ -4,6 +4,7 @@
 
 void highestImmediateScore( const Field& field, PossibleMoves& out_result )
 {
+  // straightforward
   field.calculateMoves( out_result );
   std::sort( out_result.begin(), out_result.end(), sortByScore );
 }

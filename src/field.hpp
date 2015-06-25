@@ -37,7 +37,6 @@ public:
     return _size;
   }
 
-
   struct Entry
   {
     Coordinate coordinate;
@@ -45,6 +44,9 @@ public:
   };
 
   // iterate through cells
+  // this is probably me refactoring too much; I use this like twice and I'm not entirely convinced the code is nicer for it.
+  // after all, this is not a simple iterator through the cells; it also returns the current coordinate (since we need that), making it a tad icky.
+  // Would be nicer with coroutines/generators; maybe in C++17? But it'll be a while until that's supported at FH.
   class const_iterator : public std::iterator< std::input_iterator_tag, Entry, int >
   {
     friend class Field;

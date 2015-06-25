@@ -85,6 +85,7 @@ int main( int argc, char** argv )
     {
       thread.join();
     }
+
     return 0;
   }
   catch( std::exception& e )

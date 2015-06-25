@@ -147,7 +147,7 @@ static void priorityExpand( const Field& field, ResultManager& resultManager, co
           Node newNode{ node.moves, node.field };
           newNode.moves.push_back( move );
           const Score increase = newNode.field.remove( move );
-          queue.emplace( score + increase, std::move( newNode ), sizeLimit ); // drops low-score entries once size limit is reached
+          queue.emplace( score + increase, std::move( newNode ), sizeLimit ); // drops low-score entries once the size limit is reached
         }
       }
     }

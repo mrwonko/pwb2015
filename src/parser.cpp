@@ -5,9 +5,11 @@
 #include <cctype>
 #include <sstream>
 
+
 Field parse( const std::string& input )
 {
   std::string::const_iterator it = input.begin();
+
 
   // ignores spaces, throws on end of input
   auto read = [ &it, &input ]()
@@ -16,15 +18,20 @@ Field parse( const std::string& input )
     {
       ++it;
     }
+
     if( it == input.end() )
     {
       throw std::runtime_error( "unexpected end of input" );
     }
+
     return *( it++ );
   };
+
+
   auto expect = [ &read ]( const char expected )
   {
     const char actual = read();
+
     if( actual != expected )
     {
       std::stringstream error;
@@ -33,16 +40,22 @@ Field parse( const std::string& input )
     }
   };
 
+
+
   expect( '[' );
+
+
   Field::Cells cells;
   Dimension width{ 0 };
+
   bool first = true;
   bool fieldDone = false;
+
   while( !fieldDone )
   {
     switch( read() )
     {
-      // assuming valid input, i.e. no leading commas
+      // we assume valid input, i.e. no leading commas; otherwise, this code will not parse correctly. But what can I do? Garbage in, garbage out.
     case ',':
       expect( '[' );
       // fall through
@@ -51,6 +64,7 @@ Field parse( const std::string& input )
       // read row
       char currentChar = read();
       Color currentColor = 0;
+
       while( currentChar != ']' )
       {
         // for simplicity, let's just assume valid input.
@@ -66,7 +80,9 @@ Field parse( const std::string& input )
         }
         currentChar = read();
       }
+
       cells.push_back( currentColor );
+
       if( first )
       {
         width = static_cast< Dimension >( cells.size() );
@@ -81,24 +97,31 @@ Field parse( const std::string& input )
       }
       break;
     }
+
     case ']':
     {
       fieldDone = true;
       break;
     }
+
     default:
       throw std::runtime_error( "invalid input!" );
     }
   }
+
   // skip trailing spaces
   while( it != input.end() && std::isspace( *it ) )
   {
     ++it;
   }
+
+
   // must be end of input
   if( it != input.end() )
   {
-    throw std::runtime_error( "invalid trailing input: \"" + std::string( it, input.end() ) + '"' );
+    throw std::runtime_error(
+      "invalid trailing input: \"" + std::string( it, input.end() ) + '"'
+    );
   }
 
   return Field( std::move( cells ), width );

@@ -7,6 +7,7 @@
 #include <utility>
 #include <iostream>
 
+
 typedef void( *MoveCalculation )( const Field&, PossibleMoves& );
 
 // Of the sorted possible moves, take the best one
@@ -25,7 +26,7 @@ void eachSingleBest( const Field& field, ResultManager& resultManager, const std
 
 void priorityExpandHeuristically( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );
 
-// I'm not sure this ever performs better than the heuristical version
+// I'm not sure if this ever performs any better than the heuristical version
 void priorityExpandAll( const Field& field, ResultManager& resultManager, const unsigned int sizeLimit );
 
 void randomly( const Field& field, ResultManager& resultManager, unsigned int seed );
