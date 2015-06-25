@@ -9,6 +9,78 @@
 #include <string>
 #include <random>
 
+static inline void singleBestImpl( const Field& field, ResultManager& resultManager, MoveCalculation calculatePossibleMoves, Score currentScore, Moves& moves,  const char* name )
+{
+  thread_local PossibleMoves possibleMoves;
+  thread_local Field currentField( { { 0 } }, 1 );
+  currentField = field;
+
+  calculatePossibleMoves( currentField, possibleMoves );
+  while( !possibleMoves.empty() )
+  {
+    const Coordinate& move = possibleMoves[ 0 ].coordinate;
+    currentScore += currentField.remove( move );
+    moves.push_back( move );
+    calculatePossibleMoves( currentField, possibleMoves );
+  }
+
+  currentScore -= currentField.calculatePenalty();
+  resultManager.report( currentScore, moves, name );
+}
+
+void singleBest( const Field& field, ResultManager& resultManager, MoveCalculation calculatePossibleMoves, const char* name )
+{
+  thread_local Moves moves;
+  moves.clear();
+  singleBestImpl( field, resultManager, calculatePossibleMoves, 0, moves, name );
+}
+
+static void nBestImpl( const Field& currentField, ResultManager& resultManager, MoveCalculation calculatePossibleMoves, const unsigned int n, Score currentScore, Moves& moves, const char* name )
+{
+  PossibleMoves possibleMoves;
+  calculatePossibleMoves( currentField, possibleMoves );
+  if( possibleMoves.empty() )
+  {
+    currentScore -= Field( currentField ).calculatePenalty();
+    resultManager.report( currentScore, moves, name );
+  }
+  else
+  {
+    // try the best n moves
+    possibleMoves.resize( std::min< PossibleMoves::size_type >( possibleMoves.size(), n ) );
+    for( const PossibleMove& move : possibleMoves )
+    {
+      Field nextField( currentField );
+      Score nextScore = currentScore + nextField.remove( move.coordinate );
+      moves.push_back( move.coordinate );
+      nBestImpl( std::move( nextField ), resultManager, calculatePossibleMoves, n, nextScore, moves, name );
+      moves.pop_back();
+    }
+  }
+}
+
+void nBest( const Field& field, ResultManager& resultManager, MoveCalculation calculatePossibleMoves, const unsigned int n, const char* name )
+{
+  Moves moves;
+  nBestImpl( field, resultManager, calculatePossibleMoves, n, 0, moves, name );
+  std::cerr << name << " finished" << std::endl;
+}
+
+static inline void eachSingleBestImpl( const Field& field, ResultManager& resultManager, const std::vector< MoveCalculationInfo >& moveCalculations, Score currentScore, const Moves& moves )
+{
+  for( MoveCalculationInfo entry : moveCalculations )
+  {
+    thread_local Moves currentMoves;
+    currentMoves = moves;
+    singleBestImpl( field, resultManager, entry.moveCalculation, currentScore, currentMoves, entry.name );
+  }
+}
+
+void eachSingleBest( const Field& field, ResultManager& resultManager, const std::vector< MoveCalculationInfo >& moveCalculations )
+{
+  eachSingleBestImpl( field, resultManager, moveCalculations, 0, {} );
+}
+
 struct Node
 {
   Moves moves;
@@ -164,15 +236,16 @@ void randomly( const Field& initialField, ResultManager& resultManager, unsigned
     // maybe use something > 1? as it stands, there will be some redundancy.
     while( fields.size() > 1 )
     {
-      each<
-        highestImmediateScore,
-        lowestImmediateScore,
-        creatingLargestMatch,
-        creatingFewestMatches,
-        creatingFewestMatchesAvoidingTermination,
-        creatingSmallestMeanDistanceToCentroid,
-        creatingSmallestMaximumDistanceToCentroid
-      >::_singleBest( fields.back().field, resultManager, fields.back().score, moves, "randomly single best" );
+      static const std::vector< MoveCalculationInfo > moveCalculations {
+        { highestImmediateScore, "randomly single best highest immediate score" },
+        { lowestImmediateScore, "randomly single best lowest immediate score" },
+        { creatingLargestMatch, "randomly single best creating largest match" },
+        { creatingFewestMatches, "randomly single best creating fewest matches" },
+        { creatingFewestMatchesAvoidingTermination, "randomly single best creating fewest matches (avoiding termination)" },
+        { creatingSmallestMeanDistanceToCentroid, "randomly single best creating smallest mean distance to centroid" },
+        { creatingSmallestMaximumDistanceToCentroid, "randomly single best creating smallest maximum distance to centroid" }
+      };
+      eachSingleBestImpl( fields.back().field, resultManager, moveCalculations, fields.back().score, moves );
       fields.pop_back();
       moves.pop_back();
     }
