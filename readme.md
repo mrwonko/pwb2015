@@ -55,6 +55,6 @@ The [Field](src/field.hpp) data structure is also of interest; it represents the
 
 ## Results
 
-In the end my solution was beat only by that of the organizer's, effectively netting me 1st place and thus the first pick of the book prizes. So I'm now the proud owner of "Structure and Interpretation of Computer Programs" - I've been meaning to learn Scheme for a while now, and this should be an excellent introduction.
+In the end my solution was beat only by that of the organizer, effectively netting me 1st place and thus the first pick of the book prizes. So I'm now the proud owner of "Structure and Interpretation of Computer Programs" - I've been meaning to learn Scheme for a while now, and this should be an excellent introduction.
 
 I will check which algorithm ended up finding the winning solution in each round once the data that was used is released.
