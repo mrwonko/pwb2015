@@ -8,6 +8,12 @@ My entry to [this year's programming competition](http://samegame.asta-wedel.de/
 
 The task was to write an AI to quickly find good solutions for "same-game", i.e. a rectangular field of blocks where clicking two or more neighbouring blocks of the same color removes them, awarding score and making the remaining blocks drop down. Larger matches give quadratically more points and the program that finds the best solution in a fixed time wins the round.
 
+## Result
+
+In the end my solution was beat only by that of the organizer, effectively netting me 1st place and thus the first pick of the book prizes. So I'm now the proud owner of "Structure and Interpretation of Computer Programs" - I've been meaning to learn Scheme for a while now, and this should be an excellent introduction.
+
+I will check which algorithm ended up finding the winning solution in each round once the data that was used is released.
+
 ## My solution
 
 My solution is two-fold: I have multiple algorithms for choosing which piece to pick next (the step algorithms in [step/](src/step)), and multiple algorithms for choosing which of those algorithms to choose (in [algorithms.cpp](src/algorithms.cpp)).
@@ -51,10 +57,4 @@ The [Step Algorithms](src/step/) are also pretty straightforward, some template 
 
 The Step-Series Algorithms are in [algorithms.cpp](src/algorithms.cpp) and somewhat more complex, but the above descriptions should give you an idea of what they do.
 
-The [Field](src/field.hpp) data structure is also of interest; it represents the whole game field using an array and provides a method of retrieving all the matches (i.e. connected blocks), which are calculated using a fairly naive flood fill. (There's potential for optimization here, I believe.) The matches are not stored in a new dynamic array, which would have to be allocated on each function call, but instead use a supplied one, which can thus be re-used. 
-
-## Results
-
-In the end my solution was beat only by that of the organizer, effectively netting me 1st place and thus the first pick of the book prizes. So I'm now the proud owner of "Structure and Interpretation of Computer Programs" - I've been meaning to learn Scheme for a while now, and this should be an excellent introduction.
-
-I will check which algorithm ended up finding the winning solution in each round once the data that was used is released.
+The [Field](src/field.hpp) data structure is also of interest; it represents the whole game field using an array and provides a method of retrieving all the matches (i.e. connected blocks), which are calculated using a fairly naive flood fill. (There's potential for optimization here, I believe.) The matches are not stored in a new dynamic array, which would have to be allocated on each function call, but instead use a supplied one, which can thus be re-used.
