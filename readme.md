@@ -6,7 +6,7 @@ My entry to [this year's programming competition](http://samegame.asta-wedel.de/
 
 ## Task
 
-The task was to write an AI to quickly find good solutions for "same-game", i.e. a rectangular field of blocks where clicking two or more neighbouring blocks of the same color removes them, awarding score and making the remaining blocks drop down. Larger matches give quadratically more points and the program that finds the best solution in a fixed time wins the round.
+The task was to write an AI to quickly find good solutions for [the Same Game](http://www.factmonster.com/games/samegame.html), i.e. a rectangular field of blocks where clicking two or more neighbouring blocks of the same color removes them, awarding score and making the remaining blocks drop down. Larger matches give quadratically more points and the program that finds the best solution in a fixed time wins the round.
 
 ## Result
 
